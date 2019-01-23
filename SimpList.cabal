@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 792cde12251873130a0c18b7d19264e0141feb2420336d6a13bacb4de5b29f1b
+-- hash: 9d3935c7d6e365ace5bdfd8176decf7ea1c397d24bb2daebc6371d596651c246
 
 name:           SimpList
 version:        0.1.0.0
@@ -27,7 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      SimpList
   other-modules:
       Paths_SimpList
   hs-source-dirs:
