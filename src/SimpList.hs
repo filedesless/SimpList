@@ -74,6 +74,7 @@ elem needle (List current haystack) =
   needle == current || elem needle haystack
 
 filter :: (a -> Bool) -> SimpList a -> SimpList a
+filter predicate (EmptyList) = EmptyList
 filter predicate (List x xs)
   | predicate x = List x rest
   | otherwise   = rest
@@ -89,7 +90,13 @@ filter predicate (List x xs)
     go (List _ xs) n = xs !! (n - 1)
 
 zip :: SimpList a -> SimpList b -> SimpList (a, b)
-zip = undefined
+zip (EmptyList) _ = EmptyList
+zip _ (EmptyList) = EmptyList
+zip (List x xs) (List y ys) = List (x, y) (zip xs ys)
 
-sort :: SimpList a -> SimpList a
-sort = undefined
+sort :: Ord a => SimpList a -> SimpList a
+sort (EmptyList) = EmptyList
+sort (List x xs) = sort lesser ++ List x EmptyList ++ sort higher
+  where
+    lesser = filter (<  x) xs
+    higher = filter (>= x) xs
