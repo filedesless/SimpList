@@ -1,0 +1,62 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 792cde12251873130a0c18b7d19264e0141feb2420336d6a13bacb4de5b29f1b
+
+name:           SimpList
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/SimpList#readme>
+homepage:       https://github.com/filedesless/SimpList#readme
+bug-reports:    https://github.com/filedesless/SimpList/issues
+author:         filedesless
+maintainer:     example@example.com
+copyright:      2019 filedesless
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/filedesless/SimpList
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_SimpList
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable SimpList-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_SimpList
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SimpList
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+test-suite SimpList-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_SimpList
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SimpList
+    , base >=4.7 && <5
+  default-language: Haskell2010
