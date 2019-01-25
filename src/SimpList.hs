@@ -5,8 +5,9 @@ import Prelude hiding (
   map, reverse, foldl, sum, product, take,
   drop, elem, filter, (!!), zip, sort)
 
-data SimpList a = EmptyList | List a (SimpList a)
-  deriving (Show, Eq)
+data SimpList α = EmptyList
+                | List α (SimpList α)
+                deriving (Show, Eq)
 
 (++) :: SimpList a -> SimpList a -> SimpList a
 (++) (EmptyList) other = other
