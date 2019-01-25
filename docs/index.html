@@ -17,29 +17,16 @@
     </style>
   </head>
   <body>
-    <textarea id="source">
-
-class: center, middle
-
-# Title
-
----
-
-# Agenda
-
-1. Introduction
-2. Deep-dive
-3. ...
-
----
-
-# Introduction
-
-    </textarea>
-    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
-    </script>
-    <script>
-      var slideshow = remark.create();
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+    <script type="text/javascript">
+      var slideshow = remark.create({
+	  sourceUrl: 'README.md',
+	  highlightStyle: 'github',
+	  ratio: '3:2',
+	  navigation: {
+	      scroll: false
+	  }
+      });
     </script>
   </body>
 </html>
