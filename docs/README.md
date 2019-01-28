@@ -512,3 +512,20 @@ sort (List x xs) = sort left ++ List x EmptyList ++ sort right
 List 1 (List 2 (List 3 (List 4)))
 ```
 ]
+
+---
+
+# conclusion
+
+that's all folks!
+
+some resources to learn haskell:
+
+- https://wiki.haskell.org/Haskell
+- http://learnyouahaskell.com
+
+but practice makes perfect:
+
+- https://adventofcode.com
+- https://projecteuler.net
+- https://www.codewars.com
