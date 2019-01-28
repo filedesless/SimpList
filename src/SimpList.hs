@@ -3,7 +3,7 @@ module SimpList where
 import Prelude hiding (
   (++), head, last, tail, init, null, length,
   map, reverse, foldl, sum, product, take,
-  drop, elem, filter, (!!), zip, sort)
+  drop, elem, filter, (!!), zip, partition, sort)
 
 data SimpList α = EmptyList
                 | List α (SimpList α)
@@ -18,6 +18,7 @@ head (EmptyList) = error "head EmptyList"
 head (List x _ ) = x
 
 last :: SimpList a -> a
+last (EmptyList) = error "last EmptyList"
 last (List x EmptyList) = x
 last (List _ xs) = last xs
 
@@ -32,7 +33,7 @@ init (List x xs) = List x (init xs)
 
 null :: SimpList a -> Bool
 null (EmptyList) = True
-null lst = False
+null _ = False
 
 length :: SimpList a -> Int
 length (EmptyList) = 0
@@ -43,10 +44,10 @@ map f (EmptyList) = EmptyList
 map f (List x xs) = List (f x) (map f xs)
 
 reverse :: SimpList a -> SimpList a
-reverse l = rev l EmptyList
+reverse input = rev input EmptyList
   where
-    rev (EmptyList) l = l
-    rev (List x xs) l = rev xs (List x l)
+    rev (EmptyList) output = output
+    rev (List x xs) output = rev xs (List x output)
 
 foldl :: (b -> a -> b) -> b -> SimpList a -> b
 foldl _ acc (EmptyList) = acc
@@ -82,22 +83,25 @@ filter predicate (List x xs)
   where rest = filter predicate xs
 
 (!!) :: SimpList a -> Int -> a
-(!!) lst n
-  | n < 0 = error "negative index"
-  | otherwise = go lst n
-  where
-    go (EmptyList) _ = error "index too large"
-    go (List x _ ) 0 = x
-    go (List _ xs) n = xs !! (n - 1)
+(!!) (EmptyList) _ = error "index too large"
+(!!) (List x _ ) 0 = x
+(!!) (List _ xs) n
+  | n < 0     = error "negative index"
+  | otherwise = xs !! (n - 1)
 
 zip :: SimpList a -> SimpList b -> SimpList (a, b)
 zip (EmptyList) _ = EmptyList
 zip _ (EmptyList) = EmptyList
 zip (List x xs) (List y ys) = List (x, y) (zip xs ys)
 
+partition :: (a -> Bool) -> SimpList a -> (SimpList a, SimpList a)
+partition predicate (EmptyList) = (EmptyList, EmptyList)
+partition predicate (List x xs)
+  | predicate x = (List x left, right)
+  | otherwise   = (left, List x right)
+  where (left, right) = partition predicate xs
+
 sort :: Ord a => SimpList a -> SimpList a
 sort (EmptyList) = EmptyList
-sort (List x xs) = sort lesser ++ List x EmptyList ++ sort higher
-  where
-    lesser = filter (<  x) xs
-    higher = filter (>= x) xs
+sort (List x xs) = sort left ++ List x EmptyList ++ sort right
+  where (left, right) = partition (< x) xs
