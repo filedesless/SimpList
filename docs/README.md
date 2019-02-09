@@ -45,7 +45,297 @@ Stack is a cross-platform program for developing Haskell projects
 
 	git clone https://github.com/filedesless/SimpList
 	cd SimpList
-	stack ghci src/SimpList.hs
+	stack exec ghci
+
+---
+
+# A haskell primer
+
+A program is a set of expression
+(`True`, `False`, `42`, `2.5`, `'h'`, `"hello world"`, etc...)
+
+Expressions are categorized into types
+(`Bool`, `Int`, `Float`, `Char`, `String`, etc...)
+
+We can see a type as a set of possible values for a given expression
+
+Types are bound by functions, which are the definition of a computation required to produce values of a certain type given another type
+
+---
+
+# Functions
+
+A function is a relation that associates each element `x` of a set `X`, to a single element `y` of another set `Y` (possibly the same set)
+
+```haskell
+odd :: Int -> Bool
+abs :: Int -> Int
+words :: String -> [String]
+length :: [a] -> Int
+```
+
+.center[![](https://upload.wikimedia.org/wikipedia/commons/d/df/Function_color_example_3.svg)]
+
+---
+
+# Simple application
+
+fire up GHCi, The Glorious Glasgow Haskell Compilation System (interpreter)
+
+`$ stack exec ghci`
+
+- `:h` for help
+- `:t` for type introspection
+- `:{\n ... lines ... \n:}\n` for multiline input
+
+```haskell
+Prelude> odd 2
+False
+Prelude> abs (-2)
+2
+Prelude> length [1,2,3,4,5]
+5
+Prelude> words "hello world"
+["hello","world"]
+Prelude> 2 + 2
+4
+```
+
+---
+
+# Algebraic Data Types
+
+Types constructed from "algebraic" operations, in particular with "sum" and "product"
+
+```haskell
+-- "sum" is alternation (A | B, meaning A or B but not both)
+data Boolean = False | True
+data Suit = Club | Diamond | Heart | Spade
+	deriving (Show, Eq)
+
+data Value = Two | Three | Four | Five | Six
+		   | Seven | Eight | Nine | Ten
+		   | Jack | Queen | King | Ace
+	deriving (Show, Eq)
+
+-- "product" is combination (A B, meaning A and B together)
+data Card = C Value Suit
+	deriving (Show, Eq)
+
+
+Prelude> C Two Club
+C Two Club
+Prelude> :t C Two Club
+C Two Club :: Card
+```
+
+---
+
+# Polymorphic Data Types
+
+Also called parametrized data types, they allow functions to be reused on multiple types
+
+```haskell
+-- Expressive way to declare something as "Nullable"
+data Maybe a = Nothing | Just a
+
+-- Generally used to return a normal value, or an error of different type
+data Either a b = Left a | Right b
+
+-- Linked list
+data List a = Nil | Cons a (List a)
+
+-- Double ended queue
+data Deque a = Deque [a] [a]
+
+-- Rose tree
+data Tree a = Node a [Tree a]
+```
+
+---
+
+# Lists
+
+```haskell
+data List a = Nil | Cons a (List a)
+```
+
+To save typing, we have the syntactic sugar `Nil = []` and the infix operator `:` for `Cons`
+
+Few examples:
+
+```haskell
+Prelude> 1 : 2 : 3 : 4 : []
+[1,2,3,4]
+Prelude> [1,2,3,4,5,6]
+[1,2,3,4,5,6]
+Prelude> [1..10]
+[1,2,3,4,5,6,7,8,9,10]
+Prelude> [5,10..20]
+[5,10,15,20]
+Prelude> [1..]
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24 ...
+Prelude> [ toEnum x :: Char | x <- [66..90] ++ [98..122], even x ]
+"BDFHJLNPRTVXZbdfhjlnprtvxz"
+```
+
+---
+
+# Map / Reduce
+
+`$ stack exec ghci`
+
+```haskell
+Prelude> :t fmap
+fmap :: Functor f => (a -> b) -> f a -> f b
+
+
+Prelude> :t foldl
+foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
+```
+
+```haskell
+λ> fmap odd [1,2,3,4,5]
+[True,False,True,False,True]
+λ> foldl (+) 0 [1,2,3,4,5]
+15
+```
+
+---
+
+# Typeclasses
+
+### Eq
+
+For types that support an (in)equality test
+
+From `:info Eq`
+
+```haskell
+class Eq a where
+  (==) :: a -> a -> Bool
+  (/=) :: a -> a -> Bool
+  {-# MINIMAL (==) | (/=) #-}
+```
+
+---
+
+# Typeclasses
+
+### Ord
+
+For types that support full ordering of elements
+
+From `:info Ord`
+
+```haskell
+class Eq a => Ord a where
+  compare :: a -> a -> Ordering
+  (<) :: a -> a -> Bool
+  (<=) :: a -> a -> Bool
+  (>) :: a -> a -> Bool
+  (>=) :: a -> a -> Bool
+  max :: a -> a -> a
+  min :: a -> a -> a
+  {-# MINIMAL compare | (<=) #-}
+```
+
+---
+
+# Typeclasses
+
+### Enum
+
+For types that support Enumeration
+
+From `:info Enum`
+
+```haskell
+class Enum a where
+  succ :: a -> a
+  pred :: a -> a
+  toEnum :: Int -> a
+  fromEnum :: a -> Int
+  enumFrom :: a -> [a]
+  enumFromThen :: a -> a -> [a]
+  enumFromTo :: a -> a -> [a]
+  enumFromThenTo :: a -> a -> a -> [a]
+  {-# MINIMAL toEnum, fromEnum #-}
+```
+
+---
+
+# Typeclasses
+
+### Show
+
+For types that support a String representation
+
+From `:info Show`
+
+```haskell
+class Show a where
+  showsPrec :: Int -> a -> ShowS
+  show :: a -> String
+  showList :: [a] -> ShowS
+  {-# MINIMAL showsPrec | show #-}
+```
+
+---
+
+# Typeclasses
+
+### Functor
+
+For types that support mapping
+
+From `:info Functor`
+
+```haskell
+class Functor (f :: * -> *) where
+  fmap :: (a -> b) -> f a -> f b
+  (<$) :: a -> f b -> f a
+  {-# MINIMAL fmap #-}
+```
+
+---
+
+# Typeclasses
+
+### Foldable
+
+From `:info Foldable`
+
+```haskell
+class Foldable (t :: * -> *) where
+  Data.Foldable.fold :: Monoid m => t m -> m
+  foldMap :: Monoid m => (a -> m) -> t a -> m
+  foldr :: (a -> b -> b) -> b -> t a -> b
+  Data.Foldable.foldr' :: (a -> b -> b) -> b -> t a -> b
+  foldl :: (b -> a -> b) -> b -> t a -> b
+  Data.Foldable.foldl' :: (b -> a -> b) -> b -> t a -> b
+  foldr1 :: (a -> a -> a) -> t a -> a
+  foldl1 :: (a -> a -> a) -> t a -> a
+  Data.Foldable.toList :: t a -> [a]
+  null :: t a -> Bool
+  length :: t a -> Int
+  elem :: Eq a => a -> t a -> Bool
+  maximum :: Ord a => t a -> a
+  minimum :: Ord a => t a -> a
+  sum :: Num a => t a -> a
+  product :: Num a => t a -> a
+  {-# MINIMAL foldMap | foldr #-}
+```
+
+Applicative, Monad
+
+---
+
+# Composition
+
+---
+
+# Monads
 
 ---
 
@@ -58,7 +348,7 @@ The SimpList data type
 
 ```haskell
 data SimpList α = EmptyList
-	            | List α (SimpList α)
+				| List α (SimpList α)
 ```
 
 
@@ -238,8 +528,8 @@ returns the SimpList in reversed order
 reverse :: SimpList a -> SimpList a
 reverse input = rev input EmptyList
   where
-    rev (EmptyList) output = output
-    rev (List x xs) output = rev xs (List x output)
+	rev (EmptyList) output = output
+	rev (List x xs) output = rev xs (List x output)
 ```
 
 * _where_ defines an auxiliary recursive function used to prepend to an output list all elements of the input list
