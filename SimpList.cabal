@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9d3935c7d6e365ace5bdfd8176decf7ea1c397d24bb2daebc6371d596651c246
+-- hash: 47d603e84a040009418a5602a9fb2cb3be3d1f2ee1ab3f5e7c01317e1d0779ec
 
 name:           SimpList
 version:        0.1.0.0
@@ -27,13 +27,16 @@ source-repository head
 
 library
   exposed-modules:
+      Chal1
       SimpList
   other-modules:
       Paths_SimpList
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      QuickCheck
+    , base >=4.7 && <5
+    , hspec
   default-language: Haskell2010
 
 executable SimpList-exe
@@ -44,8 +47,10 @@ executable SimpList-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      SimpList
+      QuickCheck
+    , SimpList
     , base >=4.7 && <5
+    , hspec
   default-language: Haskell2010
 
 test-suite SimpList-test
@@ -57,6 +62,8 @@ test-suite SimpList-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      SimpList
+      QuickCheck
+    , SimpList
     , base >=4.7 && <5
+    , hspec
   default-language: Haskell2010

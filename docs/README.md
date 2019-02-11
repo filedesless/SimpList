@@ -183,8 +183,6 @@ Prelude> [ toEnum x :: Char | x <- [66..90] ++ [98..122], even x ]
 
 # Map / Reduce
 
-`$ stack exec ghci`
-
 ```haskell
 Prelude> :t fmap
 fmap :: Functor f => (a -> b) -> f a -> f b
@@ -203,13 +201,9 @@ foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
 
 ---
 
-# Typeclasses
-
-### Eq
+# Typeclasses - Eq
 
 For types that support an (in)equality test
-
-From `:info Eq`
 
 ```haskell
 class Eq a where
@@ -220,13 +214,9 @@ class Eq a where
 
 ---
 
-# Typeclasses
-
-### Ord
+# Typeclasses - Ord
 
 For types that support full ordering of elements
-
-From `:info Ord`
 
 ```haskell
 class Eq a => Ord a where
@@ -242,54 +232,9 @@ class Eq a => Ord a where
 
 ---
 
-# Typeclasses
-
-### Enum
-
-For types that support Enumeration
-
-From `:info Enum`
-
-```haskell
-class Enum a where
-  succ :: a -> a
-  pred :: a -> a
-  toEnum :: Int -> a
-  fromEnum :: a -> Int
-  enumFrom :: a -> [a]
-  enumFromThen :: a -> a -> [a]
-  enumFromTo :: a -> a -> [a]
-  enumFromThenTo :: a -> a -> a -> [a]
-  {-# MINIMAL toEnum, fromEnum #-}
-```
-
----
-
-# Typeclasses
-
-### Show
-
-For types that support a String representation
-
-From `:info Show`
-
-```haskell
-class Show a where
-  showsPrec :: Int -> a -> ShowS
-  show :: a -> String
-  showList :: [a] -> ShowS
-  {-# MINIMAL showsPrec | show #-}
-```
-
----
-
-# Typeclasses
-
-### Functor
+# Typeclasses - Functor
 
 For types that support mapping
-
-From `:info Functor`
 
 ```haskell
 class Functor (f :: * -> *) where
@@ -300,11 +245,9 @@ class Functor (f :: * -> *) where
 
 ---
 
-# Typeclasses
+# Typeclasses - Foldable
 
-### Foldable
-
-From `:info Foldable`
+For types that support reducing
 
 ```haskell
 class Foldable (t :: * -> *) where
@@ -327,481 +270,78 @@ class Foldable (t :: * -> *) where
   {-# MINIMAL foldMap | foldr #-}
 ```
 
-Applicative, Monad
-
 ---
 
 # Composition
 
----
-
-# Monads
-
----
-
-# SimpList
-
-The SimpList data type
-
-- polymorphic on any type α
-- represented as a simply linked list
-
 ```haskell
-data SimpList α = EmptyList
-				| List α (SimpList α)
-```
+Prelude> :t (.)
+(.) :: (b -> c) -> (a -> b) -> a -> c
 
+Prelude> numWords = length . words
+Prelude> numWords "tasty test of some words"
+5
 
-.footnote[
-#### Example:
+Prelude> sumOdds = sum . filter odd
+Prelude> sumOdds [1..20]
+100
 
-```haskell
-λ> empty = EmtyList
-λ> single = List "singleton" EmptyList
-λ> multiple = List "a" (List "linked" (List "list" EmptyList))
-```
-]
-
----
-
-# head
-
-returns the first element of a SimpList
-
-```haskell
-head :: SimpList a -> a
-head (EmptyList) = error "head EmptyList"
-head (List x _ ) = x
-```
-
-# tail
-
-returns all elements but the head of a SimpList
-
-```haskell
-tail :: SimpList a -> SimpList a
-tail (EmptyList) = error "tail EmptyList"
-tail (List _ xs) = xs
+Prelude> import Data.List
+Prelude Data.List> sortWords = unwords . sort . words
+Prelude Data.List> sortWords "some words are better sorted"
+"are better some sorted words"
 ```
 
 ---
 
-# (++)
+# Problem solving
 
-appends to lists, as an infix operator
+Get the difference between the smallest and largest element of a list
 
 ```haskell
-(++) :: SimpList a -> SimpList a -> SimpList a
-(++) (EmptyList) other = other
-(++) (List x xs) other = List x (xs ++ other)
+Prelude> diffMinMax l = maximum l - minimum l
+Prelude> diffMinMax [10..42]
+32
 ```
 
-Uses recursion by reduction of the first argument to the base case
-
-.footnote[
-#### Example:
+Find the first element that is smaller than its predecessor in a list
 
 ```haskell
-λ> List 1 (List 2 EmptyList) ++ List 3 (List 4 EmptyList)
-List 1 (List 2 (List 3 (List 4 EmptyList)))
-```
-]
-
-
----
-
-# last
-
-returns the last element of a SimpList
-
-```haskell
-last :: SimpList a -> a
-last (EmptyList) = error "last EmptyList"
-last (List x EmptyList) = x
-last (List _ xs) = last xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> last (List 1 (List 2 (List 3 EmptyList)))
-3
-```
-]
-
-
----
-
-# init
-
-returns all but the last element of a SimpList
-
-```haskell
-init :: SimpList a -> SimpList a
-init (EmptyList) = error "init EmptyList"
-init (List x EmptyList) = EmptyList
-init (List x xs) = List x (init xs)
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> init (List 1 (List 2 (List 3 EmptyList)))
-List 1 (List 2 EmptyList)
-```
-]
-
-
----
-
-# null
-
-tells if a SimpList is empty
-
-```haskell
-null :: SimpList a -> Bool
-null (EmptyList) = True
-null _ = False
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> null (List 1 (List 2 (List 3 EmptyList)))
-False
-```
-]
-
----
-
-# length
-
-return the number of elements of a SimpList
-
-```haskell
-length :: SimpList a -> Int
-length (EmptyList) = 0
-length (List _ xs) = 1 + length xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> length (List 1 (List 2 (List 3 EmptyList)))
-3
-```
-]
-
-
----
-
-# map
-
-applies a function to all elements of a SimpList and return a SimpList of the results
-
-```haskell
-map :: (a -> b) -> SimpList a -> SimpList b
-map f (EmptyList) = EmptyList
-map f (List x xs) = List (f x) (map f xs)
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> map (+ 2) (List 1 (List 2 (List 3 EmptyList)))
-List 3 (List 4 (List 5 EmptyList))
-```
-]
-
----
-
-# reverse
-
-returns the SimpList in reversed order
-
-```haskell
-reverse :: SimpList a -> SimpList a
-reverse input = rev input EmptyList
-  where
-	rev (EmptyList) output = output
-	rev (List x xs) output = rev xs (List x output)
-```
-
-* _where_ defines an auxiliary recursive function used to prepend to an output list all elements of the input list
-
-.footnote[
-#### Example:
-
-```haskell
-λ> reverse (List 1 (List 2 (List 3 EmptyList)))
-List 3 (List 2 (List 1 EmptyList))
-```
-]
-
----
-
-# foldl
-
-folds a SimpList into a single value from a given binary function and a seed
-
-foldl f acc [x1, x2, x3] = f (f (f acc x1) x2) x3
-
-```haskell
-foldl :: (b -> a -> b) -> b -> SimpList a -> b
-foldl _ acc (EmptyList) = acc
-foldl f acc (List x xs) = foldl f (f acc x) xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> foldl (+) 10 (List 1 (List 2 (List 3 EmptyList)))
+Prelude> :{
+Prelude| firstSmaller (a:b:rest)
+Prelude|   | b < a = b
+Prelude|   | otherwise = firstSmaller (b : rest)
+Prelude| :}
+Prelude> firstSmaller [ x * x | x <- [-5..5] ]
 16
 ```
-]
-
 
 ---
 
-# reverse (again)
+# Chal1
 
-we can now use foldl to implement reverse in a simpler manner
-
-```haskell
-reverse :: SimpList a -> SimpList a
-reverse = foldl (\acc x -> List x acc) EmptyList
-```
-
-arguments are omitted; reverse is the result of foldl's partial application
-
----
-
-# sum
-
-returns the sum of a numerical SimpList
+Implement the 3 following functions
 
 ```haskell
-sum :: Num a => SimpList a -> a
-sum (EmptyList) = 0
-sum (List x xs) = x + sum xs
+-- sum of a list
+sigma :: Num a => [a] -> a
+-- length of a list
+len :: Num p => [a] -> p
+-- average of a list
+avg :: Fractional a => [a] -> a
 ```
 
-.footnote[
-#### Example:
+Check out `src/Chal1.hs`, and `test/Chal1Spec.hs`
 
-```haskell
-λ> sum (List 1 (List 2 (List 3 (List 4 EmptyList))))
-10
-```
-]
+run all the tests with
 
----
+`stack test`
 
-# product
+or particular tests with
 
-returns the product of a numerical SimpList
+`stack test --ta '-m "/Chal1/sigma/"'`
 
-```haskell
-product :: Num a => SimpList a -> a
-product (EmptyList) = 1
-product (List x xs) = x * product xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> product (List 1 (List 2 (List 3 (List 4 EmptyList))))
-24
-```
-]
-
----
-
-# take
-
-`take n` returns the `n` first elements of a SimpList
-
-```haskell
-take :: Int -> SimpList a -> SimpList a
-take 0 _ = EmptyList
-take n (List x xs) = List x (take (n - 1) xs)
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> take 2 (List 1 (List 2 (List 3 (List 4 EmptyList))))
-List 1 (List 2 EmptyList)
-```
-]
-
----
-
-# drop
-
-`drop n` returns all elements but the `n` firsts of a SimpList
-
-```haskell
-drop :: Int -> SimpList a -> SimpList a
-drop _ EmptyList = EmptyList
-drop 0 l = l
-drop n (List _ xs) = drop (n - 1) xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> drop 2 (List 1 (List 2 (List 3 (List 4 EmptyList))))
-List 3 (List 4 EmptyList)
-```
-]
-
----
-
-# elem
-
-tells if a value is element of a SimpList
-
-```haskell
-elem :: Eq a => a -> SimpList a -> Bool
-elem _ EmptyList = False
-elem needle (List current haystack) =
-  needle == current || elem needle haystack
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> elem 3 (List 1 (List 2 (List 3 (List 4 EmptyList))))
-True
-```
-]
-
----
-
-# (!!)
-
-`l !! n` returns the `n`th element of the SimpList `l`
-
-```hakell
-(!!) :: SimpList a -> Int -> a
-(!!) (EmptyList) _ = error "index too large"
-(!!) (List x _ ) 0 = x
-(!!) (List _ xs) n
-  | n < 0     = error "negative index"
-  | otherwise = xs !! (n - 1)
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> List 1 (List 2 (List 3 (List 4 EmptyList))) !! 2
-3
-```
-]
-
----
-
-# zip
-
-returns a SimpList of pairs from elements of two given SimpList
-
-```haskell
-zip :: SimpList a -> SimpList b -> SimpList (a, b)
-zip (EmptyList) _ = EmptyList
-zip _ (EmptyList) = EmptyList
-zip (List x xs) (List y ys) = List (x, y) (zip xs ys)
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> zip (List 1 (List 2 EmptyList)) (List 3 (List 4 EmptyList))
-List (1,3) (List (2,4) EmptyList)
-```
-]
-
----
-
-# filter
-
-returns all elements of a SimpList matching a given predicate
-
-```haskell
-filter :: (a -> Bool) -> SimpList a -> SimpList a
-filter predicate (EmptyList) = EmptyList
-filter predicate (List x xs)
-  | predicate x = List x rest
-  | otherwise   = rest
-  where rest = filter predicate xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> filter odd (List 1 (List 2 (List 3 (List 4 EmptyList))))
-List 1 (List 2 EmptyList)
-```
-]
-
----
-
-# partition
-
-returns a tuple of elements of a SimpList that do and do not match the given predicate
-
-```haskell
-partition :: (a -> Bool) -> SimpList a -> (SimpList a, SimpList a)
-partition predicate (EmptyList) = (EmptyList, EmptyList)
-partition predicate (List x xs)
-  | predicate x = (List x left, right)
-  | otherwise   = (left, List x right)
-  where (left, right) = partition predicate xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> partition (< 3) (List 1 (List 2 (List 3 (List 4 (List 5 EmptyList)))))
-( List 1 (List 2 EmptyList) , List 3 (List 4 (List 5 EmptyList)) )
-```
-]
-
----
-
-# sort
-
-naive quicksort implementation
-
-```haskell
-sort :: Ord a => SimpList a -> SimpList a
-sort (EmptyList) = EmptyList
-sort (List x xs) = sort left ++ List x EmptyList ++ sort right
-  where (left, right) = partition (< x) xs
-```
-
-.footnote[
-#### Example:
-
-```haskell
-λ> sort (List 4 (List 3 (List 1 (List 2 EmptyList))))
-List 1 (List 2 (List 3 (List 4)))
-```
-]
+`stack test --ta '-m "/Chal1/sigma/behaves like sum/"'`
 
 ---
 
