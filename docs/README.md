@@ -1,3 +1,4 @@
+
 # SimpList
 
 ## a gentle introduction to
@@ -136,20 +137,23 @@ C Two Club :: Card
 Also called parametrized data types, they allow functions to be reused on multiple types
 
 ```haskell
+-- Sum types
 -- Expressive way to declare something as "Nullable"
 data Maybe a = Nothing | Just a
 
 -- Generally used to return a normal value, or an error of different type
 data Either a b = Left a | Right b
 
--- Linked list
-data List a = Nil | Cons a (List a)
-
+-- Product types
 -- Double ended queue
 data Deque a = Deque [a] [a]
 
 -- Rose tree
 data Tree a = Node a [Tree a]
+
+-- Sum and product of types
+-- Linked list
+data List a = Nil | Cons a (List a)
 ```
 
 ---
@@ -296,6 +300,32 @@ Prelude Data.List> sortWords "some words are better sorted"
 
 # Problem solving
 
+Tells if a list is empty
+
+(stupid version)
+
+```haskell
+Prelude> empty xs = length xs == 0 -- or
+Prelude> empty = (== 0) . length
+```
+
+(better answer)
+
+```haskell
+Prelude> :{
+Prelude| empty [] = True
+Prelude| empty xs = False
+Prelude| :}
+Prelude> empty []
+True
+Prelude> empty ["some", "elements"]
+False
+```
+
+---
+
+# Problem solving
+
 Get the difference between the smallest and largest element of a list
 
 ```haskell
@@ -342,6 +372,30 @@ or particular tests with
 `stack test --ta '-m "/Chal1/sigma/"'`
 
 `stack test --ta '-m "/Chal1/sigma/behaves like sum/"'`
+
+---
+
+# Chal1
+
+Solution:
+
+```haskell
+module Chal1 where
+
+-- sum of a list
+sigma :: Num a => [a] -> a
+sigma [] = 0
+sigma (h:t) = h + sigma t
+
+-- length of a list
+len :: Num p => [a] -> p
+len [] = 0
+len (_:t) = 1 + len t
+
+-- average of a list
+avg :: Fractional a => [a] -> a
+avg l = sigma l / len l
+```
 
 ---
 

@@ -21,8 +21,6 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- hspec
-- QuickCheck
 
 library:
   source-dirs: src
@@ -48,3 +46,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - SimpList
+    - hspec
+    - hspec-discover
+    - QuickCheck
