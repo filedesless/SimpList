@@ -399,6 +399,105 @@ avg l = sigma l / len l
 
 ---
 
+# Chal2
+
+Implement the 2 following functions
+
+```haskell
+-- factorial function (n!)
+-- 1*2*3*4...*n-1*n
+fact :: (Eq p, Num p) => p -> p
+
+-- nth element of the fibonacci sequence
+-- {1,1,2,3,5,8...}
+fib :: (Eq a, Num a, Num p) => a -> p
+```
+
+Again, check out `src/Chal2.hs` and `test/Chal2Spec.hs`
+
+Verify with `stack test --ta '-m "/Chal2/"'`
+
+---
+
+# Chal2
+
+Solution:
+
+```haskell
+module Chal2 where
+
+-- factorial function (n!)
+fact :: (Eq p, Num p) => p -> p
+fact 0 = 1
+fact n = n * fact (n - 1)
+
+-- nth element of the fibonacci sequence
+fib :: (Eq a, Num a, Num p) => a -> p
+fib 1 = 1
+fib 2 = 1
+fib n = fib (n - 1) + fib (n - 2)
+```
+
+---
+
+# Chal2'
+
+Re-implement `sigma`, `len` and `fact` with folds
+
+Modify your sources in `src/Chal{1,2}.hs` and make sure the tests still pass
+
+---
+
+# Chal2'
+
+Solution:
+
+```haskell
+-- sum of a list
+sigma :: Num a => [a] -> a
+sigma = foldr (+) 0
+
+-- length of a list
+len :: Num p => [a] -> p
+len = foldr (\_ acc -> succ acc) 0
+
+-- factorial function (n!)
+fact :: (Eq p, Num p) => p -> p
+fact n = foldr (*) 1 [1..n]
+```
+
+---
+
+# Chal3
+
+Write a function `sine m n` that returns an infinite list of elements going up and down like a sine wave between `m` and `n`
+
+```haskell
+sine :: Int -> Int -> [Int]
+-- Examples:
+--   sine 0 3 yields [0,1,2,3,2,1,0,2,3,2,1,...]
+--   sine 4 8 yields [4,5,6,7,8,7,6,5,4,5,6,...]
+--   sine 3 1 yields [3,2,1,2,3,2,1,2,3,2,1,...]
+```
+
+---
+
+# Chal3
+
+Solution:
+
+```haskell
+module Chal3 where
+
+sine :: Int -> Int -> [Int]
+sine m n
+  | m < n = cycle $ [m..n-1] ++ [n,n-1..m+1]
+  | m > n = [m,m-1..n+1] ++ sine n m
+  | otherwise = cycle [m]
+```
+
+---
+
 # conclusion
 
 that's all folks!
