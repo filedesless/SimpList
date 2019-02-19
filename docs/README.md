@@ -1,4 +1,3 @@
-
 # SimpList
 
 ## a gentle introduction to
@@ -194,6 +193,12 @@ fmap :: Functor f => (a -> b) -> f a -> f b
 
 Prelude> :t foldl
 foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
+-- foldl f z [x1, x2, x3] ==
+-- f (f (f z x1) x2) x3
+Prelude> :t foldr
+foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
+-- foldr f z [x1, x2, x3]
+-- f x1 (f x2 (f x3 z))
 ```
 
 ```haskell
@@ -406,11 +411,11 @@ Implement the 2 following functions
 ```haskell
 -- factorial function (n!)
 -- 1*2*3*4...*n-1*n
-fact :: (Eq p, Num p) => p -> p
+fact :: Int -> Integer
 
 -- nth element of the fibonacci sequence
 -- {1,1,2,3,5,8...}
-fib :: (Eq a, Num a, Num p) => a -> p
+fib :: Int -> Integer
 ```
 
 Again, check out `src/Chal2.hs` and `test/Chal2Spec.hs`
@@ -427,15 +432,38 @@ Solution:
 module Chal2 where
 
 -- factorial function (n!)
-fact :: (Eq p, Num p) => p -> p
+fact :: Int -> Integer
 fact 0 = 1
-fact n = n * fact (n - 1)
+fact n = toInteger n * fact (n - 1)
 
 -- nth element of the fibonacci sequence
-fib :: (Eq a, Num a, Num p) => a -> p
+fib :: Int -> Integer
 fib 1 = 1
 fib 2 = 1
 fib n = fib (n - 1) + fib (n - 2)
+```
+
+---
+
+# Lambdas and reducing
+
+Lambdas are anonymous functions, generally used as arguments to other functions
+
+```haskell
+Prelude> map (\x -> x * x + x * 2) [1..20]
+[3,8,15,24,35,48,63,80,99,120,143,168,195,224,255,288,323,360,399,440]
+```
+
+Folds are generally used to reduce a list into a single value
+
+```haskell
+Prelude> foldl1 (\best x -> max best x) [1..20]
+20
+
+Prelude> foldl (\total x -> x : total) [] [1..20]
+[20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+Prelude> foldr (\x total -> x : total) [] [1..20]
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 ```
 
 ---
@@ -462,8 +490,28 @@ len :: Num p => [a] -> p
 len = foldr (\_ acc -> succ acc) 0
 
 -- factorial function (n!)
-fact :: (Eq p, Num p) => p -> p
-fact n = foldr (*) 1 [1..n]
+fact :: Int -> Integer
+fact n = foldr (*) 1 [1..toInteger n]
+```
+
+---
+
+# Guards
+
+Those are syntactic sugar for branching
+
+```haskell
+cmp :: Ord a => a -> a -> Ordering
+cmp x y
+	| x < y     = LT
+	| x > y     = GT
+	| otherwise = EQ
+
+describeLetter :: Char -> String
+describeLetter c
+   | c >= 'a' && c <= 'z' = "Lower case"
+   | c >= 'A' && c <= 'Z' = "Upper case"
+   | otherwise            = "Not an ASCII letter"
 ```
 
 ---
@@ -494,6 +542,45 @@ sine m n
   | m < n = cycle $ [m..n-1] ++ [n,n-1..m+1]
   | m > n = [m,m-1..n+1] ++ sine n m
   | otherwise = cycle [m]
+```
+
+---
+
+# Memoization
+
+Memoization is about storing values in a list to avoid recomputing them later
+
+```haskell
+-- factorial function (n!)
+fact :: Int -> Integer
+fact = (map fact' [0..] !!)
+  where
+	fact' 0 = 1
+	fact' n = fact (n - 1) * toInteger n
+```
+
+---
+
+# Chal2''
+
+What is the 10000th element of the fibonacci sequence?
+
+Memoize `fib` to cache computation and speed up the process
+
+---
+
+# Chal2''
+
+Solution
+
+```haskell
+-- nth element of the fibonacci sequence
+fib :: Int -> Integer
+fib = (map fib' [0..] !!)
+  where
+	fib' 0 = 1
+	fib' 1 = 1
+	fib' n = fib (n - 1) + fib (n - 2)
 ```
 
 ---

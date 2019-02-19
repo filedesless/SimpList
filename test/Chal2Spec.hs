@@ -12,7 +12,7 @@ spec = do
     it "works with the base case" $
       map fact [0, 1, 2] `shouldBe` [1, 1, 2]
     it "works with arbitrary examples" $
-      property $ (\n -> (n :: Int) < 1 || fact n == product [1..n])
+      property $ (\n -> (n :: Int) < 1 || fromInteger (fact n) == product [1..n])
 
   describe "fib" $ do
     it "works with the base case" $
